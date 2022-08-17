@@ -50,19 +50,26 @@ Maj6 = 4*W+H
 Min7 = 5*W
 Maj7 = 5*W+H
 
-'''dictionary containing keys=number of steps and value=name of interval described by key'''
+'''dictionary containing keys=name of interval and value=number of steps in interval'''
 INTERVALS = {
-    H: 'Minor 2nd',
-    W: 'Major 2nd',
-    Min3: 'Minor 3rd',
-    Maj3: 'Major 3rd',
-    Perf4: 'Perfect 4th',
-    Tritone: 'Tritone',
-    Perf5: 'Perfect 5th',
-    Min6: 'Minor 6th',
-    Maj6: 'Major 6th',
-    Min7: 'Minor 7th',
-    Maj7: 'Major 7th'
+    '1' : 0,
+    '2' : 2,
+    'm3' : 3,
+    '3' : 4,
+    '4' : 5,
+    'b5' : 6,
+    '5' : 7,
+    '#5' : 8,
+    '6' : 9,
+    'bb7' : 9,
+    'b7' : 10,
+    'j7' : 11,
+    'b9' : 13, 
+    '9' : 14,
+    '#9' : 15,
+    '11' : 17,
+    '#11' : 18,
+    '13' : 21
 }
 
 def step(note, step):

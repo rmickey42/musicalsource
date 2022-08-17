@@ -1,5 +1,6 @@
 import numpy as np
 from notation import *
+from data import readChordData
 
 MAJOR_STEPS = [W, W, H, W, W, W, H]
 
@@ -8,6 +9,11 @@ def ChordBuilder(*steps):
     if(len(steps) == 0):
         return lambda root: [root]
     return lambda root: [root] + ChordBuilder(*steps[1:])(step(root, steps[0]))
+
+def ChordBuilderAbsolute(steps):
+    '''Returns a function that takes a root note and returns the chord defined by the steps given in relation to the root note'''
+    return lambda root: [step(root, s) for s in steps]
+
 
 def GetAscendingVoicing(chord):
     '''Returns voicing (array of octave number of each note) of chord such that each next note is higher than the last'''
@@ -18,27 +24,12 @@ def GetAscendingVoicing(chord):
             voicing[i+1]+=1
     return voicing
 
-MajorChord = ChordBuilder(Maj3, Min3)
-MinorChord = ChordBuilder(Min3, Maj3)
-Dom7Chord = ChordBuilder(Maj3, Min3, Min3)
-Maj7Chord = ChordBuilder(Maj3, Min3, Maj3)
-Min7Chord = ChordBuilder(Min3, Maj3, Min3)
-DimChord = ChordBuilder(Min3, Min3)
-Dim7Chord = ChordBuilder(Min3, Min3, Maj3)
-AugChord = ChordBuilder(Maj3, Maj3)
-Aug7Chord = ChordBuilder(Maj3, Maj3, W)
+def ChordBuilders(data):
+    for name, intervals in data.items():
+        data[name] = ChordBuilderAbsolute(intervals)
+    return data
 
-CHORD_TYPES = {
-    'M' : MajorChord,
-    'm' : MinorChord,
-    '7' : Dom7Chord,
-    'M7' : Maj7Chord,
-    'm7' : Min7Chord,
-    'dim' : DimChord,
-    'dim7' : Dim7Chord,
-    'aug' : AugChord,
-    'aug7' : Aug7Chord
-}
+CHORD_TYPES = ChordBuilders(readChordData())
 
 def defineScale(root, steps=MAJOR_STEPS):
     '''Creates a list of notes in a scale with root as root note and formula steps (list of step counts up)'''
@@ -58,6 +49,10 @@ class Scale:
         self.voicing = (0)*len(self.scale)
         if(correctVoicing):
             self.voicing = GetAscendingVoicing(self.scale)
+    
+    def __init__(self, scale):
+        self.scale = scale
+        self.voicing = GetAscendingVoicing(self.scale)
     
     def raiseAtInterval(self, interval, n):
         note = step(self.scale[0], interval)
@@ -106,6 +101,9 @@ class Scale:
             if(other in self.scale):
                 ls.append([note, other])
         return ls
+
+def findChords(chord):
+    return Scale(chord).chords()
 
 # scale builders
 Ionian = lambda root: Scale(root, MAJOR_STEPS)

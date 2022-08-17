@@ -3,15 +3,38 @@ from scales import *
 
 tuning = ['E', 'A', 'D', 'G', 'B', 'E']
 
-def GetNoteAt(pair):
-    '''gets the note on the fretboard at (string, fret) pair'''
-    try:
-        return INDEX_NOTE[(NOTE_INDEX[tuning[pair[0]]]+pair[1])%12]
-    except: raise ValueError("GetNoteAt: String index out of range!")
+def getNoteAt(string, fret):
+    '''gets the note on the fretboard at string, fret'''
+    return INDEX_NOTE[(NOTE_INDEX[tuning[string]]+fret)%12]
 
-def ProcessFretboard(board):
-    '''using list of notes in order of low-high strings '''
+def processFretboard(board):
+    '''using list of frets in order of low-high strings, return list of notes played. '''
     list = []
-    for note in board:
+    string = 0
+    for fret in board:
+        if(fret != -1):
+            note = getNoteAt(string, fret)
+            list.append(note)
+        string+=1
+    return list
+
+def checkStr(s):
+    if(s == 'N'): return -1
+    return int(s)
+
+def getBoardInput():
+    board = list(map(checkStr, input("Input fret numbers from low to high with - in between, N for not played: ").split('-')))
+    if(len(board) > 6  or len(board) < 6):
+        print("invalid input! try again")
+        return getBoardInput()
+    return board
+
+while True:
+    notes = processFretboard(getBoardInput())
+    chords = findChords(list(dict.fromkeys(notes)))
+    closestMatch = max(chords, key=lambda c: len(c[2]))
+    print("NOTES: " + str(notes))
+    print("CLOSEST CHORD: " + str(closestMatch))
+    
 
 
