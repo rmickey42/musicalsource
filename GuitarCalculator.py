@@ -29,12 +29,21 @@ def getBoardInput():
         return getBoardInput()
     return board
 
+def checkMatch(notes, match):
+    off = []
+    for note in notes:
+        if(note not in match):
+            off.append(note)
+    return off
+
 while True:
     notes = processFretboard(getBoardInput())
     chords = findChords(list(dict.fromkeys(notes)))
     closestMatch = max(chords, key=lambda c: len(c[2]))
     print("NOTES: " + str(notes))
     print("CLOSEST CHORD: " + str(closestMatch))
+    match = checkMatch(notes, closestMatch[2])
+    print("OFF BY: " + str(match))
     
 
 
