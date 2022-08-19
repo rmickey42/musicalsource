@@ -41,14 +41,14 @@ def checkMatch(notes, match):
 
 def checkRange(f, board):
     for n in board:
-        if(f > 0 and abs(f-n) > maxReach):
+        if(f > 0 and n > 0 and abs(f-n) > maxReach):
             return False
     return True
 
 def getPositions(chordNotes, s=0, board=[]):
     open = tuning[s]
     possibleFrets = []
-    if(board.count(-1) < 6-len(chordNotes)): possibleFrets.append(-1)
+    if(board.count(-1) < len(tuning)-len(chordNotes)): possibleFrets = [-1]
     
     for note in chordNotes:
         mod = noteDistanceFwd(open, note)
@@ -65,8 +65,30 @@ def getPositions(chordNotes, s=0, board=[]):
 def getPositionsByName(root, name):
     return getPositions(CHORD_TYPES[name](root))
 
-def getPositionsFiltered(root, name):
+def getPositionsFiltered(root, name, maxStringsPlayed=6, minStringsPlayed=1):
     positions = getPositionsByName(root, name)
+    npop = 0
+    for chordi in range(len(positions)):
+        chord = positions[chordi-npop]
+        if(chord.count(-1) < len(tuning)-maxStringsPlayed or chord.count(-1) > len(tuning)-minStringsPlayed): 
+            positions.pop(chordi-npop)
+            npop += 1
+            continue
+        chunkstart = -1
+        chunkend = -1
+        for freti in range(len(chord)):
+            if(chord[freti] == -1 and chunkstart == -1):
+                chunkstart = freti
+            elif(chord[freti] != -1 and chunkstart != -1 and chunkend == -1):
+                chunkend = freti
+                if(chunkstart != 0):
+                    positions.pop(chordi-npop)
+                    npop += 1
+                    break
+                chunkstart = -1
+                chunkend = -1
+    return positions
+            
 
 '''while True:
     notes = processFretboard(getBoardInput())
@@ -77,7 +99,7 @@ def getPositionsFiltered(root, name):
     match = checkMatch(notes, closestMatch[2])
     print("OFF BY: " + str(match))
 '''
-print(getPositionsFiltered('C', 'maj'))
+print(getPositionsFiltered('C', 'm6', 6, 6))
     
 
 
