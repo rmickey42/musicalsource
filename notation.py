@@ -78,6 +78,9 @@ def step(note, step):
     n = (NOTES.index(note)+step)%12
     return NOTES[n]
 
+def noteDistanceFwd(root, other):
+    return (NOTE_INDEX[other]-NOTE_INDEX[root])%12
+
 def frequency(note, octave=0):
     '''Returns the frequency of the given note at the given octave.'''
     return FREQUENCY_DICT[note]*(2**octave)

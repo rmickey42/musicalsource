@@ -14,7 +14,6 @@ def ChordBuilderAbsolute(steps):
     '''Returns a function that takes a root note and returns the chord defined by the steps given in relation to the root note'''
     return lambda root: [step(root, s) for s in steps]
 
-
 def GetAscendingVoicing(chord):
     '''Returns voicing (array of octave number of each note) of chord such that each next note is higher than the last'''
     voicing = [0]*len(chord)

@@ -4,7 +4,7 @@ from notation import INTERVALS
 import os
 import json
 
-filename = "musical/chords.json"
+filename = "chords.json"
 
 def scrape():
     r = requests.get('https://www.guitar.ch/en-us/guitar/chord_finder/chord_finder-chord-formula.html')
