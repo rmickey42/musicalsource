@@ -1,6 +1,7 @@
 from notation import *
 from scales import *
 from functools import reduce
+import re
 
 tuning = ['E', 'A', 'D', 'G', 'B', 'E']
 maxReach = 3
@@ -21,23 +22,41 @@ def processFretboard(board):
         string+=1
     return list
 
+def getNotesAndChordsOfFretboard(board):
+    '''using list of frets, return list of chords that can be heard'''
+    notes = processFretboard(board)
+    return notes, findChords(notes)
+
 def checkStr(s):
     if(s == 'N'): return -1
     return int(s)
 
 def getBoardInput():
+    '''gets the user-inputted fretboard as a list of numbers'''
     board = list(map(checkStr, input("Input fret numbers from low to high with - in between, N for not played: ").split('-')))
     if(len(board) > 6  or len(board) < 6):
         print("invalid input! try again")
         return getBoardInput()
     return board
 
+
 def checkMatch(notes, match):
+    '''return the off notes in a chord based on the notes in match. If no off notes, return an empty list'''
     off = []
     for note in notes:
         if(note not in match):
             off.append(note)
     return off
+
+def getBestMatchesOfFretboard(board):
+    '''using list of frets, return best matching chords'''
+    notes, chords = getNotesAndChordsOfFretboard(board)
+    if(len(chords) == 0): return []
+    best = []
+    for chord in chords:
+        if(checkMatch(notes, chord[2]) == []):
+            best.append(chord)
+    return best
 
 def checkRange(f, board):
     for n in board:
@@ -88,9 +107,15 @@ def getPositionsFiltered(root, name, maxStringsPlayed=6, minStringsPlayed=1):
                 chunkstart = -1
                 chunkend = -1
     return positions
-            
 
-'''while True:
+def changeTuningStr(tunestr):
+    tuning = re.findall(r'[A-G](#|b)?', tunestr)
+
+def changeTuning(tunearr):
+    tuning = tunearr
+
+'''
+while True:
     notes = processFretboard(getBoardInput())
     chords = findChords(list(dict.fromkeys(notes)))
     closestMatch = max(chords, key=lambda c: len(c[2]))
@@ -99,7 +124,3 @@ def getPositionsFiltered(root, name, maxStringsPlayed=6, minStringsPlayed=1):
     match = checkMatch(notes, closestMatch[2])
     print("OFF BY: " + str(match))
 '''
-print(getPositionsFiltered('C', 'm6', 6, 6))
-    
-
-
